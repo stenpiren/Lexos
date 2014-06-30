@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Lexos by WheatonCS</title>
+    <title>Lexos</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -29,43 +29,79 @@
       </header>
       <section>
         <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a><h3>Summary</h3>
+<p>Lexos is an integrated workflow of tools to facilitate the computational analyses of texts, presented in a web-based interface. Functionality provided includes the ability to "scrub" texts (remove punctuation, lemmatize, consolidate characters, remove stopwords, etc), cut or segment texts, and a suite of options for analysis, including creating and downloading Document Term Matrices (DTM) of token counts (both word- and character-ngrams), making dendrograms (cluster analysis), rolling-window analyses of word usage, bubble visualizations, and word clouds. More functionality is being added on an ongoing basis.
+</p>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a><h3>Audience</h3>
+From the start, we have worked hard to build a workflow that is (i) easy to use, (ii) accepts texts in most languages, 
+including non-Western character sets, and (iii) serves as a platform for teaching and learning the science and
+art of text mining. For example, we presently use Lexos in our interdisciplinary undergraduate digital humanities course
+<a href="http://wheatoncollege.edu/lexomics/educational-material/">Computing for Poets</a>.
+Lexos is not intended for advanced text mining work such as might be accomplished by
+users of higher-end statistical languages like R (although those users might benefit from its pre-processing functions).
+Lexos functions are implemented in Python, which continues to impress us as an alternative to R, 
+and our research group has made
+significant discoveries using Lexos tools (see
+<a href="http://wheatoncollege.edu/lexomics/publications-grants/">References</a>).
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<h3>System Architecture (in brief)</h3>
+Lexos is written primarily in Python 2.7.3 using the
+<a href="http://flask.pocoo.org/">Flask</a>
+microframework, based on Werkzeug and Jinja 2.
+A heavy dose of Javascript and CSS is included on the front-end. We increasingly incorporate the wiz from
+<a href="http://d3js.org/">D3.js</a> in our visualizations and the power in the
+<a href="http://scikit-learn.org/stable/">scilearn-kit</a>
+modules for text and statistical processing.
+The INSTALLME file provides directions for setting up the development environment for testing (using localhost:5000) on your local machine.
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<h3>Dependencies</h3>
+<code>chardet, flask, matplotlib, numpy, pip, scikit-learn, scipy</code>
+<p>
+The PDF Viewer extension needs to be enabled in the Chrome browser on MacOS.
+</p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<h3>Contributors</h3>
+Richard Neal proposed and designed our current architecture. Bryan Jensen is our current software lead.
+Clayton Rieck and Bryan upgraded our current UI components. Significant contributions were made in Summer 2014 by Bryan,
+Clayton, Scott Kleinman (California State University, Northridge), Jinnan Ge, Lithia Helmreich, Qi (Sara) Zhang, and Mark LeBlanc.
+Previous iterations of our tools included contributions in 2013 by: Richard Neal, Bryan Jensen, Scott Kleinman, Devin Delfino,
+Julia Morneau, and Vicky Li; and in 2012 by: Alicia Herbert, Donald Bass, Doug Raffle, Christina Nelson, and Mike Kahn. The
+majority of these developers are or were undergraduate students in the Lexomics Research Group at Wheaton College (Norton, MA).
+Computer Science professors Tom Armstrong and Mark LeBlanc oversee the software team.
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<h3>License information</h3>
+See the file LICENSE for information on the
+terms and conditions for usage and a DISCLAIMER OF ALL WARRANTIES.
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<h3>References</h3>
+<p>
+<a href="http://lexomics.wheatoncollege.edu/">Lexomics Research Group</a>, Wheaton College, Norton, MA.
+</p>
+<p>
+<a href="http://lexos.wheatoncollege.edu">Lexos tools</a>
+</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p>
+LeBlanc, M.D., Drout, M.D.C., Kahn, M., Herbert, A. '14, Neal, R. '14 (2013).
+<a href="http://dh2013.unl.edu/abstracts/ab-293.html">Lexomics: Integrating the research and teaching spaces"</a>. 
+Short paper presented at <em>Digital Humanities 2013</em>, University of Nebraska–Lincoln, July 17, 2013.
+</p>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>
+Drout, M.D.C., Kahn, M., LeBlanc, M.D., Nelson, C. '11 (2011).
+<a href="http://muse.jhu.edu/journals/journal_of_english_and_germanic_philology/summary/v110/110.3.drout.html">
+Of Dendrogrammatology: Lexomic Methods for Analyzing the Relationships Among Old English Poems </a>, 
+<em>Journal of English and Germanic Philology</em>, v110(3), July 2011, 301-336.
+</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/WheatonCS">WheatonCS</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
+
+
+
     <script src="javascripts/scale.fix.js"></script>
+
     
   </body>
 </html>
