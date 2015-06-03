@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Lexos</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Lexos</h1>
+        <p>Python/Flask-based website for text analysis workflow.</p>
+
+        <p class="view"><a href="https://github.com/WheatonCS/Lexos">View the Project on GitHub <small>WheatonCS/Lexos</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/WheatonCS/Lexos/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/WheatonCS/Lexos/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/WheatonCS/Lexos">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>
+
+<h3>Summary</h3>
+<p>
+Lexos is an integrated workflow of tools to facilitate the computational analyses of texts, presented in a web-based interface. Functionality provided includes the ability to "scrub" texts (remove punctuation, lemmatize, consolidate characters, remove stopwords, etc), cut or segment texts, and a suite of options for analysis and visualizations, including creating and downloading Document Term Matrices (DTM) of token counts (both word- and character-ngrams or tf-idf); cluster analysis (hierarchical or k-means, with silhouette scores); rolling-window analyses of substring, word, or regex-pattern occurrances; bubble visualizations (of term frequencies); and word clouds (of term frequencies or
+<a href="http://mallet.cs.umass.edu/">MALLET</a>-produced topic modelling results). 
+More functionality is being added on an ongoing basis.
+</p>
+
+<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a><h3>Audience</h3>
+<p>
+From the start, we have worked hard to build a workflow that is (i) easy to use, (ii) accepts texts in most languages, 
+including non-Western character sets, and (iii) serves as a platform for teaching and learning the science and
+art of text mining. For example, we presently use Lexos in our interdisciplinary undergraduate digital humanities course
+<a href="http://wheatoncollege.edu/lexomics/educational-material/">Computing for Poets</a>.
+Lexos is not intended for advanced text mining work such as might be accomplished by
+users of higher-end statistical languages like R (although those users might benefit from its pre-processing functions).
+Lexos functions are implemented in Python, which continues to impress us as an alternative to R, 
+and our research group has made
+significant discoveries using Lexos tools (see
+<a href="http://wheatoncollege.edu/lexomics/publications-grants/">References</a>).
+</p>
+
+<h3>System Architecture (in brief)</h3>
+<p>
+Lexos is written primarily in Python 2.7.3 using the
+<a href="http://flask.pocoo.org/">Flask</a>
+microframework, based on Werkzeug and Jinja 2.
+A heavy dose of Javascript and CSS is included on the front-end. We increasingly incorporate the wiz from
+<a href="http://d3js.org/">D3.js</a> in our visualizations and the power in the
+<a href="http://scikit-learn.org/stable/">scilearn-kit</a>
+modules for text and statistical processing.
+The INSTALLME file provides directions for setting up the development environment for testing (using localhost:5000) on your local machine.
+</p>
+
+<h3>Dependencies</h3>
+<code>chardet, flask, gensim, matplotlib, numpy, pip, scikit-learn, scipy</code>
+<p>
+The PDF Viewer extension needs to be enabled in the Chrome browser on MacOS.
+</p>
+
+<h3>Contributors</h3>
+<p>
+Richard Neal proposed and designed our current architecture. Bryan Jensen is our current software lead.
+Clayton Rieck and Bryan upgraded our current UI components. Significant contributions were made in Summer 2014 by Bryan,
+Clayton, Scott Kleinman (California State University, Northridge), Jinnan Ge, Lithia Helmreich, Qi (Sara) Zhang, and Mark LeBlanc.
+Previous iterations of our tools included contributions in 2013 by: Richard Neal, Bryan Jensen, Scott Kleinman, Devin Delfino,
+Julia Morneau, and Vicky Li; and in 2012 by: Alicia Herbert, Donald Bass, Doug Raffle, Christina Nelson, and Mike Kahn. The
+majority of these developers are or were undergraduate students in the Lexomics Research Group at Wheaton College (Norton, MA).
+Computer Science professors Tom Armstrong and Mark LeBlanc oversee the software team.
+</p>
+
+<h3>License information</h3>
+<p>
+See the file LICENSE for information on the
+terms and conditions for usage and a DISCLAIMER OF ALL WARRANTIES.
+</p>
+
+<h3>References</h3>
+<p>
+<a href="http://lexomics.wheatoncollege.edu/">Lexomics Research Group</a>, Wheaton College, Norton, MA.
+</p>
+<p>
+<a href="http://lexos.wheatoncollege.edu">Lexos tools</a>
+</p>
+
+<p>
+LeBlanc, M.D., Drout, M.D.C., Kahn, M., Herbert, A. '14, Neal, R. '14 (2013).
+<a href="http://dh2013.unl.edu/abstracts/ab-293.html">Lexomics: Integrating the research and teaching spaces"</a>. 
+Short paper presented at <em>Digital Humanities 2013</em>, University of Nebraska–Lincoln, July 17, 2013.
+</p>
+
+<p>
+Drout, M.D.C., Kahn, M., LeBlanc, M.D., Nelson, C. '11 (2011).
+<a href="http://muse.jhu.edu/journals/journal_of_english_and_germanic_philology/summary/v110/110.3.drout.html">
+Of Dendrogrammatology: Lexomic Methods for Analyzing the Relationships Among Old English Poems </a>, 
+<em>Journal of English and Germanic Philology</em>, v110(3), July 2011, 301-336.
+</p>
+
+
+
+
+
+    <script src="javascripts/scale.fix.js"></script>
+
+    
+  </body>
+</html>

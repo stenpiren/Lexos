@@ -1,0 +1,123 @@
+{% extends "base_visualize.html" %}
+{% set active_page = 'rollingwindow' %}
+
+{% block head %}
+<!-- javascript that formats options and graph -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/scripts_rwanalysis.js') }}?ver={{version}}"></script> 
+<script type="text/javascript">
+	var dataLines = {{data}};
+	var xAxisLabel = "{{xAxisLabel}}";
+	var yAxisLabel = "{{yAxisLabel}}";
+
+
+	var legendLabels = "{{legendLabels[0].decode("utf-8", "replace")}}";
+	legendLabels = legendLabels.split("#");
+
+</script>
+		
+
+{% endblock %}
+
+{% block title %}visualizer{% endblock %} 
+
+
+{% block options %}
+<legend>Rolling Window Options</legend>
+
+<input type="hidden" name="filetorollinganalyze" value="{{ request.form['filetorollinganalyze'] }}" id="filetorollinganalyze"/>
+
+<div>
+	<div class="minifilemanage" id="similarityminifile">
+		<legend>Select Active File:</legend>
+		{% for fileID, fileLabel in labels.items() %}
+		<div class="minifilepreview {{ 'enabled' if fileID|unicode == request.form['filetorollinganalyze'] }}" id="{{fileID}}">
+			{{fileLabel}}
+		</div>
+		{% endfor %}
+	</div>
+
+	<fieldset class="rwanalysisradiosdiv">
+		<legend>Type of Count:</legend>
+		<label class="radio has-tooltip" for="rollingaverage" id="radioaverage">
+			<input type="radio" checked name="counttype" value="average" id="rollingaverage" data-toggle="radio" />
+			<span>Rolling Average</span>
+			<span class="icon-help tooltip rolling-window small" data-tooltip="number of times the string/word/regex appears in the window divided by the size of the window"></span>
+		</label>
+		<label class="radio has-tooltip" for="rollingratio" id="radioratio">
+			<input type="radio" {{ "checked" if request.form["counttype"] == "ratio" }} name="counttype" value="ratio" id="rollingratio" data-toggle="radio"/>
+			<span>Rolling Ratio</span>
+			<span class="icon-help tooltip rolling-window small" data-tooltip="number of times the first string/word/regex appears divided by the sum of the first string/word/regex and the second"></span>
+		</label>
+	</fieldset>
+
+	<fieldset class="rwanalysisradiosdiv">
+		<legend>Unit of Window:</legend>
+		<label class="radio" for="windowletter" id="radiowindowletter">
+			<input type="radio" checked name="windowtype" value="letter" id="windowletter" data-toggle="radio">in window of Letters
+		</label>
+		<span class="submiterrors" id="rwasubmiterrormessage3">Cannot use a window of letters when analyzing a word!</span>
+		<label class="radio" for="windowword" id="radiowindowword">
+			<input type="radio" {{ "checked" if request.form["windowtype"] == "word" }} name="windowtype" value="word" id="windowword" data-toggle="radio" />in window of Words
+		</label>
+		<label class="radio" for="windowline" id="radiowindowline">
+			<input type="radio" {{ "checked" if request.form["windowtype"] == "line" }} name="windowtype" value="line" id="windowline" data-toggle="radio" />in window of Lines
+		</label>
+	</fieldset>
+
+	<fieldset class="rwanalysisradiosdiv">
+		<legend>Unit of Token:</legend>
+		<label class="radio" for="inputstring" id="radioinputletter">
+			<input type="radio" checked name="inputtype" value="string" id="inputstring" data-toggle="radio"/>of String(s)
+			<span class="icon-help tooltip rolling-window small" data-tooltip="A string can be of any length one character or more."></span>
+		</label>
+		<label class="radio" for="inputword" id="radioinputword">
+			<input type="radio" {{ "checked" if request.form["inputtype"] == "word" }} name="inputtype" value="word" id="inputword" data-toggle="radio" />of Word(s)
+		</label>
+		<label class="radio" for="inputregex" id="radioinputregex">
+			<input type="radio" {{ "checked" if request.form["inputtype"] == "regex" }} name="inputtype" value="regex" id="inputregex" data-toggle="radio" />RegEx
+			<span class="icon-help tooltip rolling-window small" data-tooltip="Regular Expressions (RegEx) can be used as the search token value with this option."></span>
+		</label>
+		
+	</fieldset>
+
+	<fieldset class="rwanalysisradiosdiv" id="rolling-analysis-inputs">
+		<legend>Enter Values:</legend>
+		<label id="rollinginputlabel">Search Token:
+			<input type="text" name="rollingsearchword" class="rollinginput" id="rollingsearchword" value="{{ request.form['rollingsearchword'] }}">
+			<span class="rollingsearchwordoptdiv {{ 'hidden' if request.form['analysistype'] != 'ratio' }}"> /
+				<input type="text" name="rollingsearchwordopt" class="rollinginput" id="rollingsearchwordopt" value="{{ request.form['rollingsearchwordopt'] }}">
+			</span>
+			<span class="icon-help tooltip rolling-window small" data-tooltip="To compare up to six tokens, comma separate multiple values."></span>
+		</label>
+		<label for="rollingwindowsize">Size of Rolling Window:
+			<input type="number" name="rollingwindowsize" id="rollingwindowsize" value="{{ request.form['rollingwindowsize'] }}">
+		</label>
+	</fieldset>
+</div>
+
+
+{% endblock %}
+
+
+{% block results %}
+{% if session['rwadatagenerated'] %}
+<div id="rwagraphlabel">{{graphTitle}}</div>
+<div id="rwagraphdiv" class="hidden">{{ session['rwadatagenerated'] }}</div> 
+<label>Download:</label>
+<input type="submit" class="bttn bttn-action" id="generateRWmatrix" name="get-RW" value="CSV Matrix"/>
+<div class="bttn bttn-action" id="svg-Chrome" href="#">SVG (Chrome)</div>
+<a id="svg-Other" href="#" target="_blank">SVG (other browsers)</a>
+
+<div id="rwagraphdiv" class="infobox">
+	<p></p>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block submit %}
+<input type="submit" class="bttn bttn-action" name="rollinganalyze" value="Get Graph"/>
+<span class="submiterrors" id="rwasubmiterrormessage2">No file selected from actives.</span>
+<span class="submiterrors" id="rwasubmiterrormessage1">Empty fields.</span>
+
+{% endblock %}

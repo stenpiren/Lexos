@@ -1,0 +1,33 @@
+{% extends "base_manage.html" %}
+{% set active_page = 'upload' %}
+
+
+{% block head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/scripts_upload.js') }}?ver={{version}}"></script>
+{% endblock %}
+
+
+{% block title %}loader{% endblock %}
+
+
+{% block options %}
+<fieldset>
+	<legend>Bulk File Upload<small> (formats supported: .txt, .html, .xml and DOE(.sgml) files)</small></legend>
+
+	<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value={{ 4 * 1024 * 1024 }} />
+	<input type="file" id="fileselect" name="fileselect[]" multiple="multiple"/>
+	<div class="bttn bttn-action" id="uploadbrowse">Browse</div>
+	<div id="dragndrop">Or drop files here</div>
+</fieldset>
+{% endblock %}
+
+{% block previews %}
+
+<script type="text/template" id="file-preview-template">
+	<div class="uploadedfilespreivewwrapper">
+		<legend class="file-label"></legend>
+		<div class="uploaded-file-preview"></div>
+		<span class="file-information">File information: type: <span class="file-type"></span> size: <span class="file-size"></span> bytes</span>
+	</div>
+</script>
+{% endblock %}

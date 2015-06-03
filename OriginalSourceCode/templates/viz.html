@@ -1,0 +1,63 @@
+{% extends "base_visualize.html" %}
+{% set active_page = 'viz' %}
+
+
+{% block head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery.multiselect.min.js') }}?ver={{version}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/d3.tip.min.js') }}?ver={{version}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/scripts_viz.js') }}?ver={{version}}"></script>
+
+<link href="{{ url_for('static', filename='css/jquery.multiselect.css') }}?ver={{version}}" rel="stylesheet">
+
+<script>
+	var dataset = {{ JSONObj|safe or {} }};
+</script>
+{% endblock %}
+
+{% block title %}visualizer{% endblock %}
+
+
+{% block options %}
+{% if loading=='loading' %}<div id="exspecto-bullae">Loading...</div>{% endif %}
+<legend>BubbleViz Options</legend>
+<div id="vizoptionsbox">
+	<div id="vizcreateoptions">
+		<div class="vizoptions">
+			<select id="segmentlist" name="segmentlist" multiple="multiple">
+				{% for fileID, fileLabel in labels.items() %}
+				<option value="{{ fileID }}" {{ 'selected' if fileID|unicode in request.form.getlist('segmentlist') }}>{{ fileLabel }}</option>
+				{% endfor %}
+			</select>
+			<span class="viz-tips">Large graphs can take a while to render.</span>
+		</div>
+	</div>
+
+	<div class="vizoptions">
+		<label>Minimum Word Length:
+			<input type="number" min="0" id="minlength" name="minlength" value="{{ request.form['minlength'] or '0' }}"/>
+		</label>
+	</div>
+
+	<div class="vizoptions">
+		<label>Graph Size:
+			<input type="number" min="100" max="3000" step="100" id="graphsize" name="graphsize" value="{{ request.form['graphsize'] or '800' }}"/>
+		</label>
+	</div>
+</div>
+{% endblock %}
+
+{% block results %}
+{% if words == "" %}
+<h4 id="nosegments">Please select the segments for the graph.</h4>
+
+{% else %}
+
+<div id="viz"></div>
+
+{% endif %}
+{% endblock %}
+
+
+{% block submit %}
+<input class="bttn bttn-action" id="getviz" type="submit" value="Get Graph"/>
+{% endblock %}

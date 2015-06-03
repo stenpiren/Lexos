@@ -1,118 +1,364 @@
-<!doctype html>
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Lexos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Lexos</h1>
-        <p>Python/Flask-based website for text analysis workflow.</p>
+    <title>Webpage for Lexos</title>
 
-        <p class="view"><a href="https://github.com/WheatonCS/Lexos">View the Project on GitHub <small>WheatonCS/Lexos</small></a></p>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
+    <!-- Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="css/animate.css" rel="stylesheet" />
+    <!-- Squad theme CSS -->
+    <link href="css/style.css" rel="stylesheet">
+	<link href="color/default.css" rel="stylesheet">
 
-        <ul>
-          <li><a href="https://github.com/WheatonCS/Lexos/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/WheatonCS/Lexos/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/WheatonCS/Lexos">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>
+</head>
 
-<h3>Summary</h3>
-<p>
-Lexos is an integrated workflow of tools to facilitate the computational analyses of texts, presented in a web-based interface. Functionality provided includes the ability to "scrub" texts (remove punctuation, lemmatize, consolidate characters, remove stopwords, etc), cut or segment texts, and a suite of options for analysis and visualizations, including creating and downloading Document Term Matrices (DTM) of token counts (both word- and character-ngrams or tf-idf); cluster analysis (hierarchical or k-means, with silhouette scores); rolling-window analyses of substring, word, or regex-pattern occurrances; bubble visualizations (of term frequencies); and word clouds (of term frequencies or
-<a href="http://mallet.cs.umass.edu/">MALLET</a>-produced topic modelling results). 
-More functionality is being added on an ongoing basis.
-</p>
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+	<!-- Preloader -->
+	<div id="preloader">
+	  <div id="load"></div>
+	</div>
 
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a><h3>Audience</h3>
-<p>
-From the start, we have worked hard to build a workflow that is (i) easy to use, (ii) accepts texts in most languages, 
-including non-Western character sets, and (iii) serves as a platform for teaching and learning the science and
-art of text mining. For example, we presently use Lexos in our interdisciplinary undergraduate digital humanities course
-<a href="http://wheatoncollege.edu/lexomics/educational-material/">Computing for Poets</a>.
-Lexos is not intended for advanced text mining work such as might be accomplished by
-users of higher-end statistical languages like R (although those users might benefit from its pre-processing functions).
-Lexos functions are implemented in Python, which continues to impress us as an alternative to R, 
-and our research group has made
-significant discoveries using Lexos tools (see
-<a href="http://wheatoncollege.edu/lexomics/publications-grants/">References</a>).
-</p>
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="index.html">
+                    <h1>Lexos</h1>
+                </a>
+            </div>
 
-<h3>System Architecture (in brief)</h3>
-<p>
-Lexos is written primarily in Python 2.7.3 using the
-<a href="http://flask.pocoo.org/">Flask</a>
-microframework, based on Werkzeug and Jinja 2.
-A heavy dose of Javascript and CSS is included on the front-end. We increasingly incorporate the wiz from
-<a href="http://d3js.org/">D3.js</a> in our visualizations and the power in the
-<a href="http://scikit-learn.org/stable/">scilearn-kit</a>
-modules for text and statistical processing.
-The INSTALLME file provides directions for setting up the development environment for testing (using localhost:5000) on your local machine.
-</p>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#intro">Home</a></li>
+        <li><a href="#about">About</a></li>
+		<li><a href="#service">Software</a></li>
+		<li><a href="#contact">Contact</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Example menu</a></li>
+            <li><a href="#">Example menu</a></li>
+            <li><a href="#">Example menu</a></li>
+          </ul>
+        </li>
+      </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
 
-<h3>Dependencies</h3>
-<code>chardet, flask, gensim, matplotlib, numpy, pip, scikit-learn, scipy</code>
-<p>
-The PDF Viewer extension needs to be enabled in the Chrome browser on MacOS.
-</p>
+	<!-- Section: intro -->
+    <section id="intro" class="intro">
+	
+		<div class="slogan">
+			<h2>WELCOME TO <span class="text_color">LEXOS</span> </h2>
+			<h4>WE ARE A GROUP OF GEEKS MAKING A DATA MINING SOFTWARE FOR HUMANITY SCHOLARS</h4>
+		</div>
+		<div class="page-scroll">
+			<a href="#service" class="btn btn-circle">
+				<i class="fa fa-angle-double-down animated"></i>
+			</a>
+		</div>
+    </section>
+	<!-- /Section: intro -->
 
-<h3>Contributors</h3>
-<p>
-Richard Neal proposed and designed our current architecture. Bryan Jensen is our current software lead.
-Clayton Rieck and Bryan upgraded our current UI components. Significant contributions were made in Summer 2014 by Bryan,
-Clayton, Scott Kleinman (California State University, Northridge), Jinnan Ge, Lithia Helmreich, Qi (Sara) Zhang, and Mark LeBlanc.
-Previous iterations of our tools included contributions in 2013 by: Richard Neal, Bryan Jensen, Scott Kleinman, Devin Delfino,
-Julia Morneau, and Vicky Li; and in 2012 by: Alicia Herbert, Donald Bass, Doug Raffle, Christina Nelson, and Mike Kahn. The
-majority of these developers are or were undergraduate students in the Lexomics Research Group at Wheaton College (Norton, MA).
-Computer Science professors Tom Armstrong and Mark LeBlanc oversee the software team.
-</p>
+	<!-- Section: about -->
+    <section id="about" class="home-section text-center">
+		<div class="heading-about">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2>About us</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
 
-<h3>License information</h3>
-<p>
-See the file LICENSE for information on the
-terms and conditions for usage and a DISCLAIMER OF ALL WARRANTIES.
-</p>
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div class="container">
 
-<h3>References</h3>
-<p>
-<a href="http://lexomics.wheatoncollege.edu/">Lexomics Research Group</a>, Wheaton College, Norton, MA.
-</p>
-<p>
-<a href="http://lexos.wheatoncollege.edu">Lexos tools</a>
-</p>
+		<div class="row">
+			<div class="col-lg-2 col-lg-offset-5">
+				<hr class="marginbot-50">
+			</div>
+		</div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-3 col-md-3">
+				<div class="wow bounceInUp" data-wow-delay="0.2s">
+                <div class="team boxed-grey">
+                    <div class="inner">
+						<h5>Dr. Michael Drout</h5>
+                        <p class="subtitle">Anglo-Saxon Scholar</p>
+                        <div class="avatar"><img src="img/team/1.jpg" alt="" class="img-responsive img-circle" /></div>
+                    </div>
+                </div>
+				</div>
+            </div>
+			<div class="col-xs-6 col-sm-3 col-md-3">
+				<div class="wow bounceInUp" data-wow-delay="0.5s">
+                <div class="team boxed-grey">
+                    <div class="inner">
+						<h5>Dr. Mark D.LeBlanc</h5>
+                        <p class="subtitle">Software Lead</p>
+                        <div class="avatar"><img src="img/team/2.jpg" alt="" class="img-responsive img-circle" /></div>
 
-<p>
-LeBlanc, M.D., Drout, M.D.C., Kahn, M., Herbert, A. '14, Neal, R. '14 (2013).
-<a href="http://dh2013.unl.edu/abstracts/ab-293.html">Lexomics: Integrating the research and teaching spaces"</a>. 
-Short paper presented at <em>Digital Humanities 2013</em>, University of Nebraska–Lincoln, July 17, 2013.
-</p>
+                    </div>
+                </div>
+				</div>
+            </div>
+			<div class="col-xs-6 col-sm-3 col-md-3">
+				<div class="wow bounceInUp" data-wow-delay="0.8s">
+                <div class="team boxed-grey">
+                    <div class="inner">
+						<h5>Dr. Scott Kleinman</h5>
+                        <p class="subtitle">Director of Digital Humanities at CSU</p>
+                        <div class="avatar"><img src="img/team/3.jpg" alt="" class="img-responsive img-circle" /></div>
 
-<p>
-Drout, M.D.C., Kahn, M., LeBlanc, M.D., Nelson, C. '11 (2011).
-<a href="http://muse.jhu.edu/journals/journal_of_english_and_germanic_philology/summary/v110/110.3.drout.html">
-Of Dendrogrammatology: Lexomic Methods for Analyzing the Relationships Among Old English Poems </a>, 
-<em>Journal of English and Germanic Philology</em>, v110(3), July 2011, 301-336.
-</p>
+                    </div>
+                </div>
+				</div>
+            </div>
+			<div class="col-xs-6 col-sm-3 col-md-3">
+				<div class="wow bounceInUp" data-wow-delay="1s">
+                <div class="team boxed-grey">
+                    <div class="inner">
+						<h5>Dr. Michael J.Kahn</h5>
+                        <p class="subtitle">Professor of Mathematics</p>
+                        <div class="avatar"><img src="img/team/4.jpg" alt="" class="img-responsive img-circle" /></div>
 
+                    </div>
+                </div>
+				</div>
+            </div>
+        </div>		
+		</div>
+	</section>
+	<!-- /Section: about -->
+	
 
+	<!-- Section: Our Software -->
+    <section id="service" class="home-section text-center bg-gray">
+		
+		<div class="heading-about">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2>Our Software</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
 
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div class="container">
+		<div class="row">
+			<div class="col-lg-2 col-lg-offset-5">
+				<hr class="marginbot-50">
+			</div>
+		</div>
+        <div class="row">
+            <div class="col-sm-3 col-md-3">
+				<div class="wow fadeInLeft" data-wow-delay="0.2s">
+                <div class="service-box">
+					<div class="service-icon">
+						<img src="img/icons/service-icon-1.png" alt="" />
+					</div>
+					<div class="service-desc">
+						<h5>Manage</h5>
+						<p>Upload a file (supported formats: .txt, .html, .xml and DOE(.sgml) files) </p>
+					</div>
+                </div>
+				</div>
+            </div>
+			<div class="col-sm-3 col-md-3">
+				<div class="wow fadeInUp" data-wow-delay="0.2s">
+                <div class="service-box">
+					<div class="service-icon">
+						<img src="img/icons/service-icon-2.png" alt="" />
+					</div>
+					<div class="service-desc">
+						<h5>Prepare</h5>
+						<p>Remove Punctuation || Make Lowercase || Remove Digits || Visit our website to view more options</p>
+					</div>
+                </div>
+				</div>
+            </div>
+			<div class="col-sm-3 col-md-3">
+				<div class="wow fadeInUp" data-wow-delay="0.2s">
+                <div class="service-box">
+					<div class="service-icon">
+						<img src="img/icons/service-icon-3.png" alt="" />
+					</div>
+					<div class="service-desc">
+						<h5>Visualize</h5>
+						<p>Rolling Window Graph || Word Cloud || MultiCloud || BubbleViz</p>
+					</div>
+                </div>
+				</div>
+            </div>
+			<div class="col-sm-3 col-md-3">
+				<div class="wow fadeInRight" data-wow-delay="0.2s">
+                <div class="service-box">
+					<div class="service-icon">
+						<img src="img/icons/service-icon-4.png" alt="" />
+					</div>
+					<div class="service-desc">
+						<h5>Analyze</h5>
+						<p>CSV-Generator || Clustering || Similarity Query || Launch External Tools</p>
+					</div>
+                </div>
+				</div>
+            </div>
+        </div>		
+		</div>
+	</section>
+	<!-- /Section: Our Software -->
+	
 
+	
 
-    <script src="javascripts/scale.fix.js"></script>
+	<!-- Section: contact -->
+    <section id="contact" class="home-section text-center">
+		<div class="heading-contact">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2>Get in touch</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
 
-    
-  </body>
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div class="container">
+
+		<div class="row">
+			<div class="col-lg-2 col-lg-offset-5">
+				<hr class="marginbot-50">
+			</div>
+		</div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="boxed-grey">
+                <form id="contact-form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name">
+                                Name</label>
+                            <input type="text" class="form-control" id="name" placeholder="Enter name" required="required" />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">
+                                Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span>
+                                </span>
+                                <input type="email" class="form-control" id="email" placeholder="Enter email" required="required" /></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">
+                                Subject</label>
+                            <select id="subject" name="subject" class="form-control" required="required">
+                                <option value="na" selected="">Choose One:</option>
+                                <option value="service">General Customer Service</option>
+                                <option value="suggestions">Suggestions</option>
+                                <option value="product">Product Support</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name">
+                                Message</label>
+                            <textarea name="message" id="message" class="form-control" rows="9" cols="25" required="required"
+                                placeholder="Message"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-skin pull-right" id="btnContactUs">
+                            Send Message</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+		
+		<div class="col-lg-4">
+			<div class="widget-contact">
+			
+				<address>
+				  <strong>Lexomics Research Group</strong><br>
+				  26 East Main Street<br>
+				  Norton, MA 02766<br>
+				  <abbr title="Phone">P:</abbr> (508) 286-8200
+				</address>
+
+				<address>
+				  <strong>Email</strong><br>
+				  <a href="mailto:#">mleblanc@wheatoncollege.edu</a>
+				</address>	
+		
+			
+			</div>	
+		</div>
+    </div>	
+
+		</div>
+	</section>
+	<!-- /Section: contact -->
+
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-lg-12">
+					<div class="wow shake" data-wow-delay="0.4s">
+					<div class="page-scroll marginbot-30">
+						<a href="#intro" id="totop" class="btn btn-circle">
+							<i class="fa fa-angle-double-up animated"></i>
+						</a>
+					</div>
+					</div>
+					<p>&copy;Copyright 2015 - Lexos. All rights reserved.</p>
+				</div>
+			</div>	
+		</div>
+	</footer>
+
+    <!-- Core JavaScript Files -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.min.js"></script>	
+	<script src="js/jquery.scrollTo.js"></script>
+	<script src="js/wow.min.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="js/custom.js"></script>
+
+</body>
+
 </html>
