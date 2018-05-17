@@ -6,8 +6,8 @@ from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
     EMPTY_MILESTONE_MESSAGE, INVALID_CUTTING_TYPE_MESSAGE
 
 
-def cut_list_with_overlap(input_list: list, norm_seg_size: int, overlap: int,
-                          last_prop: float) -> List[list]:
+def _cut_list_with_overlap(input_list: list, norm_seg_size: int, overlap: int,
+                           last_prop: float) -> List[list]:
     """Cut the split list of text into list that contains sub-lists.
 
     This function takes care of both overlap and last proportion with the input
@@ -63,7 +63,7 @@ def cut_list_with_overlap(input_list: list, norm_seg_size: int, overlap: int,
             ) for index in range(num_segment)]
 
 
-def join_sublist_element(input_list: List[List[str]]) -> List[str]:
+def _join_sublist_element(input_list: List[List[str]]) -> List[str]:
     """Join each sublist of chars into string.
 
     This function joins all the element(chars) in each sub-lists together, and
@@ -76,8 +76,8 @@ def join_sublist_element(input_list: List[List[str]]) -> List[str]:
     return ["".join(chars) for chars in input_list]
 
 
-def cut_by_characters(text: str, seg_size: int, overlap: int,
-                      last_prop: float) ->List[str]:
+def _cut_by_characters(text: str, seg_size: int, overlap: int,
+                       last_prop: float) ->List[str]:
     """Cut the input text into segments by number of chars in each segment.
 
     Where the segment size is measured by counts of characters, with an option
@@ -99,19 +99,19 @@ def cut_by_characters(text: str, seg_size: int, overlap: int,
     seg_list = re.findall("\S", text)
 
     # add sub-lists(segment) to final list
-    final_seg_list = cut_list_with_overlap(input_list=seg_list,
-                                           norm_seg_size=seg_size,
-                                           overlap=overlap,
-                                           last_prop=last_prop)
+    final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                            norm_seg_size=seg_size,
+                                            overlap=overlap,
+                                            last_prop=last_prop)
 
     # join characters in each sublist
-    final_seg_list = join_sublist_element(input_list=final_seg_list)
+    final_seg_list = _join_sublist_element(input_list=final_seg_list)
 
     return final_seg_list
 
 
-def cut_by_words(text: str, seg_size: int, overlap: int,
-                 last_prop: float) -> List[str]:
+def _cut_by_words(text: str, seg_size: int, overlap: int,
+                  last_prop: float) -> List[str]:
     """Cut the input text into segments by number of words in each segment.
 
     Cuts the text into equally sized segments, where the segment size is
@@ -133,19 +133,19 @@ def cut_by_words(text: str, seg_size: int, overlap: int,
     seg_list = re.findall("\S+\s*", text)
 
     # add sub-lists(segment) to final list
-    final_seg_list = cut_list_with_overlap(input_list=seg_list,
-                                           norm_seg_size=seg_size,
-                                           overlap=overlap,
-                                           last_prop=last_prop)
+    final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                            norm_seg_size=seg_size,
+                                            overlap=overlap,
+                                            last_prop=last_prop)
 
     # join words in each sublist
-    final_seg_list = join_sublist_element(input_list=final_seg_list)
+    final_seg_list = _join_sublist_element(input_list=final_seg_list)
 
     return final_seg_list
 
 
-def cut_by_lines(text: str, seg_size: int, overlap: int,
-                 last_prop: float) -> List[str]:
+def _cut_by_lines(text: str, seg_size: int, overlap: int,
+                  last_prop: float) -> List[str]:
     """Cut the input text into segments by number of lines in each segment.
 
     The size of the segment is measured by counts of lines, with an option for
@@ -167,18 +167,18 @@ def cut_by_lines(text: str, seg_size: int, overlap: int,
     seg_list = text.splitlines(keepends=True)
 
     # add sub-lists(segment) to final list
-    final_seg_list = cut_list_with_overlap(input_list=seg_list,
-                                           norm_seg_size=seg_size,
-                                           overlap=overlap,
-                                           last_prop=last_prop)
+    final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                            norm_seg_size=seg_size,
+                                            overlap=overlap,
+                                            last_prop=last_prop)
 
     # join lines in each sublist
-    final_seg_list = join_sublist_element(input_list=final_seg_list)
+    final_seg_list = _join_sublist_element(input_list=final_seg_list)
 
     return final_seg_list
 
 
-def cut_by_number(text: str, num_segment: int) -> List[str]:
+def _cut_by_number(text: str, num_segment: int) -> List[str]:
     """Cut the text by the input number of segment (equally sized).
 
     The chunks created will be equal in terms of word count, or line count if
@@ -228,12 +228,12 @@ def cut_by_number(text: str, num_segment: int) -> List[str]:
     seg_list = [get_single_seg(index) for index in range(num_segment)]
 
     # join words in each sublist
-    final_seg_list = join_sublist_element(input_list=seg_list)
+    final_seg_list = _join_sublist_element(input_list=seg_list)
 
     return final_seg_list
 
 
-def cut_by_milestone(text: str, milestone: str) -> List[str]:
+def _cut_by_milestone(text: str, milestone: str) -> List[str]:
     """Cuts the file by milestones.
 
     :param text: the string with the contents of the file.
@@ -281,21 +281,21 @@ def cut(text: str, cutting_value: str, cutting_type: str, overlap: str,
         cutting_value = int(cutting_value)
 
     if cutting_type == 'letters':
-        string_list = cut_by_characters(text=text, seg_size=cutting_value,
-                                        overlap=overlap,
-                                        last_prop=last_prop_percent)
+        string_list = _cut_by_characters(text=text, seg_size=cutting_value,
+                                         overlap=overlap,
+                                         last_prop=last_prop_percent)
     elif cutting_type == 'words':
-        string_list = cut_by_words(text=text, seg_size=cutting_value,
-                                   overlap=overlap,
-                                   last_prop=last_prop_percent)
+        string_list = _cut_by_words(text=text, seg_size=cutting_value,
+                                    overlap=overlap,
+                                    last_prop=last_prop_percent)
     elif cutting_type == 'lines':
-        string_list = cut_by_lines(text=text, seg_size=cutting_value,
-                                   overlap=overlap,
-                                   last_prop=last_prop_percent)
+        string_list = _cut_by_lines(text=text, seg_size=cutting_value,
+                                    overlap=overlap,
+                                    last_prop=last_prop_percent)
     elif cutting_type == 'milestone':
-        string_list = cut_by_milestone(text=text, milestone=cutting_value)
+        string_list = _cut_by_milestone(text=text, milestone=cutting_value)
     elif cutting_type == 'number':
-        string_list = cut_by_number(text=text, num_segment=cutting_value)
+        string_list = _cut_by_number(text=text, num_segment=cutting_value)
 
     # noinspection PyUnboundLocalVariable
     return string_list
