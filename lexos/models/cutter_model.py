@@ -1,297 +1,316 @@
 from lexos.models.base_model import BaseModel
+import re
+from typing import List
 
+from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
+    NEG_OVERLAP_LAST_PROP_MESSAGE, LARGER_SEG_SIZE_MESSAGE, \
+    EMPTY_MILESTONE_MESSAGE, INVALID_CUTTING_TYPE_MESSAGE
 
-class cutterModel(BaseModel):
-    def __init__(self, test_options: Optional[CutterTestOptions] = None):
-        """Class to generate and manipulate dtm.
+class CutterTestOptions(NamedTuple):
+
+class CutterModel(BaseModel):
+    def __init__(self, test_options: Optional[DendroTestOptions] = None):
+        """This is the class to generate dendrogram.
 
         :param test_options:
             the input used in testing to override the dynamically loaded option
         """
         super().__init__()
         if test_options is not None:
-            self._test_file_id_content_map = test_options.file_id_content_map
+            self._test_text = test_options.doc_term_matrix
             self._test_front_end_option = test_options.front_end_option
+            #self._test_id_temp_label_map = test_options.id_temp_label_map
         else:
-            self._test_file_id_content_map = None
+            self._test_text = None
             self._test_front_end_option = None
-    @property
-    def _file_id_content_map(self) -> FileIDContentMap:
-        """Result form higher level class: the file manager of current session.
+            #self._test_id_temp_label_map = None
 
-        :return: a file manager object
-        """
-        return self._test_file_id_content_map \
-            if self._test_file_id_content_map is not None \
-            else FileManagerModel().load_file_manager() \
-            .get_content_of_active_with_id()
 
-    @property
-    def _opts(self) -> MatrixFrontEndOption:
-        """Get all the options to use
+    def _cut_list_with_overlap(input_list: list, norm_seg_size: int,
+                               overlap: int,
+                               last_prop: float) -> List[list]:
+        """Cut the split list of text into list that contains sub-lists.
 
-        :return: either a frontend option or a fake option used for testing
-        """
-        return self._test_front_end_option \
-            if self._test_front_end_option is not None \
-            else MatrixReceiver().options_from_front_end()
-
-    def get_temp_label(self) -> Counter[str]:
-        """An unordered list (counter) of all the temp labels"""
-        return Counter(self._opts.id_temp_label_map.values())
-
-    def get_id_temp_label_map(self) -> IdTempLabelMap:
-        """Get the dict where id maps to temp labels."""
-        return self._opts.id_temp_label_map
-
-    def _get_raw_count_matrix(self) -> pd.DataFrame:
-        """Get the raw count matrix for the whole corpus
-
-        :return: a panda data frame
-            where
-                - the index header is the file id
-                - the row header is the words in the file
-        """
-        all_contents_with_id = self._file_id_content_map
-
-        # a pair of parallel array
-        file_ids = all_contents_with_id.keys()
-        file_contents = all_contents_with_id.values()
-
-        # heavy hitting tokenization and counting options set here
-
-        # CountVectorizer can do
-        #       (a) preprocessing
-        #           (but we don't need that);
-        #       (b) tokenization:
-        #               analyzer=['word', 'char', or 'char_wb';
-        #               Note: char_wb does not span across two words,
-        #                   but will include whitespace at start/end of ngrams)
-        #                   not an option in UI]
-        #               token_pattern (only for analyzer='word'):
-        #               cheng magic regex:
-        #                   words include only NON-space characters
-        #               ngram_range
-        #                   (presuming this works for both word and char??)
-        #       (c) culling:
-        #           min_df..max_df
-        #           (keep if term occurs in at least these documents)
-        #       (d) stop_words handled in scrubber
-        #       (e) lowercase=False (we want to leave the case as it is)
-        #       (f) dtype=float
-        #           sets type of resulting matrix of values;
-        #           need float in case we use proportions
-
-        # for example:
-        # word 1-grams
-        #   ['content' means use strings of text,
-        #   analyzer='word' means features are "words";
-        # min_df=1 means include word if it appears in at least one doc, the
-        # default;
-
-        # [\S]+  :
-        #   means tokenize on a word boundary where boundary are \s
-        #   (spaces, tabs, newlines)
-
-        count_vector = CountVectorizer(
-            input='content', encoding='utf-8', min_df=1,
-            analyzer=self._opts.token_option.token_type,
-            token_pattern=definitions.WORD_REGEX, lowercase=False,
-            ngram_range=(self._opts.token_option.n_gram_size,
-                         self._opts.token_option.n_gram_size),
-            stop_words=[], dtype=float, max_df=1.0
-        )
-
-        # make a (sparse) Document-Term-Matrix (DTM) to hold all counts
-        doc_term_sparse_matrix = count_vector.fit_transform(file_contents)
-
-        # need to get at the entire matrix and not sparse matrix
-        raw_count_matrix = doc_term_sparse_matrix.toarray()
-        # snag all features (e.g., word-grams or char-grams) that were counted
-        words = count_vector.get_feature_names()
-        # pack the data into a data frame
-        return pd.DataFrame(data=raw_count_matrix,
-                            index=file_ids,
-                            columns=words)
-
-    def _apply_transformations_to_matrix(self, dtm_data_frame: pd.DataFrame) \
-        -> pd.DataFrame:
-        """Apply all the transitions to the matrix
-
-        Currently there are following transitions with following order:
-        - culling
-        - most frequent word
-        - tf-idf transformation
-        - convert to proportion
-        :param dtm_data_frame: the initial raw count data frame.
-        :return: the final data frame after all the transformation
+        This function takes care of both overlap and last proportion with the input
+        list and the segment size. The function calculates the number of segment
+        with the overlap value and then use it as indexing to capture all the
+        sub-lists with the get_single_seg helper function.
+        :param last_prop: the last segment size / other segment size.
+        :param input_list: the segment list that split the contents of the file.
+        :param norm_seg_size: the size of the segment.
+        :param overlap: the min proportional size that the last segment has to be.
+        :return a list of list(segment) that the text has been cut into, which has
+        not go through the last proportion size calculation.
         """
 
-        # apply culling to dtm
-        if self._opts.culling_option.cull_least_seg is not None:
-            dtm_after_cull = self._get_culled_matrix(
-                least_num_seg=self._opts.culling_option.cull_least_seg,
-                dtm_data_frame=dtm_data_frame
-            )
-        else:
-            dtm_after_cull = dtm_data_frame
+        # get the distance between starts of each two adjacent segments
+        seg_start_distance = norm_seg_size - overlap
 
-        # only leaves the most frequent words in dtm
-        if self._opts.culling_option.mfw_lowest_rank is not None:
-            dtm_after_mfw = self._get_most_frequent_word(
-                lower_rank_bound=self._opts.culling_option.mfw_lowest_rank,
-                dtm_data_frame=dtm_after_cull,
-            )
-        else:
-            dtm_after_mfw = dtm_after_cull
+        # the length of the list excluding the last segment
+        length_exclude_last = len(input_list) - norm_seg_size * last_prop
 
-        # ==== Parameters TfidfTransformer (TF/IDF) ===
+        # the total number of segments after cut
+        # the `+ 1` is to add back the last segments
+        num_segment = \
+            int(length_exclude_last / seg_start_distance) + 1
 
-        # Note: by default, idf use natural log
-        #
-        # (a) norm: 'l1', 'l2' or None, optional
-        #     {USED AS THE LAST STEP: after getting the result of tf*idf,
-        #       normalize the vector (row-wise) into unit vector}
-        #     l1': Taxicab / Manhattan distance (p=1)
-        #          [ ||u|| = |u1| + |u2| + |u3| ... ]
-        #     l2': Euclidean norm (p=2), the most common norm;
-        #           typically called "magnitude"
-        #           [ ||u|| = sqrt( (u1)^2 + (u2)^2 + (u3)^2 + ... )]
-        #     *** user can choose the normalization method ***
-        #
-        # (b) use_idf:
-        #       boolean, optional ;
-        #       "Enable inverse-document-frequency reweighting."
-        #           which means: True if you want to use idf (times idf)
-        #       False if you don't want to use idf at all,
-        #           the result is only term-frequency
-        #       *** we choose True here because the user has already chosen
-        #           TF/IDF, instead of raw counts ***
-        #
-        # (c) smooth_idf:
-        #       boolean, optional;
-        #       "Smooth idf weights by adding one to document frequencies,
-        #           as if an extra
-        #       document was seen containing every term in the collection
-        #            exactly once. Prevents zero divisions.""
-        #       if True,
-        #           idf = log(number of doc in total /
-        #                       number of doc where term t appears) + 1
-        #       if False,
-        #           idf = log(number of doc in total + 1 /
-        #                       number of doc where term t appears + 1 ) + 1
-        #       *** we choose False, because denominator never equals 0
-        #           in our case, no need to prevent zero divisions ***
-        #
-        # (d) sublinear_tf:
-        #       boolean, optional ; "Apply sublinear tf scaling"
-        #       if True,  tf = 1 + log(tf) (log here is base 10)
-        #       if False, tf = term-frequency
-        #       *** we choose False as the normal term-frequency ***
+        # need at least one segment
+        if num_segment < 1:
+            num_segment = 1
 
-        if self._opts.norm_option.use_tf_idf:  # if use TF/IDF
-            transformer = TfidfTransformer(
-                norm=self._opts.norm_option.tf_idf_norm_option,
-                use_idf=True,
-                smooth_idf=False,
-                sublinear_tf=False)
-            dtm_after_tf_idf = transformer.fit_transform(dtm_after_mfw)
-        else:
-            dtm_after_tf_idf = dtm_after_mfw
+        def get_single_seg(index: int, is_last_prop: bool) -> list:
+            """Helper to get one single segment with index.
 
-        # change the dtm to proportion
-        if self._opts.norm_option.use_freq:
-            # apply the proportion function to each row
-            dtm_after_freq = dtm_after_tf_idf.apply(
-                lambda row: row / row.sum(), axis=1
-            )
-        else:
-            dtm_after_freq = dtm_after_tf_idf
+            This function first evaluate whether the segment is the last one and
+            grab different segment according to the result, and returns sub-lists
+            while index is in the range of number of segment.
+            :param is_last_prop: the bool value that determine whether the segment
+            is the last one.
+            :param index: the index of the segment in the final segment list.
+            :return single segment in the input_list based on index.
+            """
 
-        return dtm_after_freq
+            # define current segment size based on whether it is the last segment
+            if is_last_prop:
+                return input_list[seg_start_distance * index:]
+            else:
+                return input_list[seg_start_distance * index:
+                                  seg_start_distance * index + norm_seg_size]
 
-    def get_matrix(self) -> pd.DataFrame:
-        """Get the document term matrix (DTM) of all the active files
+        # return the whole list of segment while evaluating whether is last segment
+        return [get_single_seg(
+            index=index,
+            is_last_prop=True if index == num_segment - 1 else False
+        ) for index in range(num_segment)]
 
-        :return:
-            a panda data frame with:
-            - the index (row) header are file ids
-            - the column header are words
+    def _join_sublist_element(input_list: List[List[str]]) -> List[str]:
+        """Join each sublist of chars into string.
+
+        This function joins all the element(chars) in each sub-lists together, and
+        turns every sub-lists to one element in the overall list.
+        The sublist will turned into a string with all the same elements as before.
+        :param input_list: the returned list after cut
+        :return: the list that contains all the segments as strings.
         """
 
-        raw_count_matrix = self._get_raw_count_matrix()
+        return ["".join(chars) for chars in input_list]
 
-        return self._apply_transformations_to_matrix(raw_count_matrix)
+    def _cut_by_characters(text: str, seg_size: int, overlap: int,
+                           last_prop: float) -> List[str]:
+        """Cut the input text into segments by number of chars in each segment.
 
-    @staticmethod
-    def _get_most_frequent_word(lower_rank_bound: int,
-                                dtm_data_frame: pd.DataFrame) -> pd.DataFrame:
-        """ Gets the most frequent words in final_matrix and words.
-
-        The new count matrix will consists of only the most frequent words in
-        the whole corpus.
-        :param lower_rank_bound: the lowest rank to remain in the matrix
-                                 (the rank is determined by the word's number
-                                 of appearance in the whole corpus)
-                                 (ranked from high to low)
-        :param dtm_data_frame: the dtm in the form of panda data frame.
-                                the indices(rows) are segment names
-                                the columns are words.
-        :return:
-            dtm data frame with only the most frequent words
+        Where the segment size is measured by counts of characters, with an option
+        for an amount of overlap between segments and a minimum proportion
+        threshold for the last segment.
+        :param text: the string with the contents of the file.
+        :param seg_size: the segment size, in characters.
+        :param overlap: the number of characters to overlap between segments.
+        :param last_prop: the last segment size / other segment size.
+        :return: a list of list(segment) that the text has been cut into.
         """
 
-        # get the word count of each word in the corpus (a panda series)
-        corpus_word_count: pd.Series = dtm_data_frame.sum(axis='index')
+        # pre-condition assertion
+        assert seg_size > 0, NON_POSITIVE_SEGMENT_MESSAGE
+        assert overlap >= 0 and last_prop >= 0, NEG_OVERLAP_LAST_PROP_MESSAGE
+        assert seg_size > overlap, LARGER_SEG_SIZE_MESSAGE
 
-        # sort the word list
-        sorted_word_count: pd.Series \
-            = corpus_word_count.sort_values(ascending=False)
+        # split all the chars while keeping all the whitespace
+        seg_list = re.findall("\S", text)
 
-        # get the first "lower_rank_bound" number of item
-        most_frequent_counts: pd.Series \
-            = sorted_word_count.head(lower_rank_bound)
+        # add sub-lists(segment) to final list
+        final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                                norm_seg_size=seg_size,
+                                                overlap=overlap,
+                                                last_prop=last_prop)
 
-        # get the most frequent words (the index of the count)
-        most_frequent_words = most_frequent_counts.index
+        # join characters in each sublist
+        final_seg_list = _join_sublist_element(input_list=final_seg_list)
 
-        return dtm_data_frame[most_frequent_words]
+        return final_seg_list
 
-    @staticmethod
-    def _get_culled_matrix(least_num_seg: int,
-                           dtm_data_frame: pd.DataFrame) -> pd.DataFrame:
-        """Gets the culled final_matrix and culled words.
+    def _cut_by_words(text: str, seg_size: int, overlap: int,
+                      last_prop: float) -> List[str]:
+        """Cut the input text into segments by number of words in each segment.
 
-        Gives a matrix that only contains the words that appears in more than
-        `least_num_seg` segments.
-        :param least_num_seg: least number of segment the word needs to appear
-                                in to be kept.
-        :param dtm_data_frame: the dtm in forms of panda data frames.
-                                the indices(rows) are segment names
-                                the columns are words.
-        :return:
-             the culled dtm data frame
+        Cuts the text into equally sized segments, where the segment size is
+        measured by counts of words, with an option for an amount of overlap
+        between segments and a minimum proportion threshold for the last segment.
+        :param text: the string with the contents of the file.
+        :param seg_size: the segment size, in words.
+        :param overlap: the number of words to overlap between segments.
+        :param last_prop: the last segment size / other segment size.
+        :return: a list of list(segment) that the text has been cut into.
         """
 
-        # create a bool matrix to indicate whether a word is in a segment
-        # at the line of segment s and the column of word w,
-        # if the value is True, then means w is in s
-        # otherwise means w is not in s
-        is_in_data_frame = dtm_data_frame.astype(bool)
+        # pre-condition assertion
+        assert seg_size > 0, NON_POSITIVE_SEGMENT_MESSAGE
+        assert overlap >= 0 and last_prop >= 0, NEG_OVERLAP_LAST_PROP_MESSAGE
+        assert seg_size > overlap, LARGER_SEG_SIZE_MESSAGE
 
-        # summing the boolean array gives an int, which indicates how many
-        # True there are in that array.
-        # this is an series, indicating each word is in how many segments
-        # this array is a parallel array of words
-        # noinspection PyUnresolvedReferences
-        words_in_num_seg_series = is_in_data_frame.sum(axis=0)
+        # split text by words while keeping all the whitespace
+        seg_list = re.findall("\S+\s*", text)
 
-        # get the index of all the words needs to remain
-        # this is an array of int
-        dtm_data_frame = dtm_data_frame.loc[
-                         :,  # select all rows (row indexer)
-                         words_in_num_seg_series >= least_num_seg
-                         # col indexer
-                         ]
+        # add sub-lists(segment) to final list
+        final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                                norm_seg_size=seg_size,
+                                                overlap=overlap,
+                                                last_prop=last_prop)
 
-        return dtm_data_frame
+        # join words in each sublist
+        final_seg_list = _join_sublist_element(input_list=final_seg_list)
+
+        return final_seg_list
+
+    def _cut_by_lines(text: str, seg_size: int, overlap: int,
+                      last_prop: float) -> List[str]:
+        """Cut the input text into segments by number of lines in each segment.
+
+        The size of the segment is measured by counts of lines, with an option for
+        an amount of overlap between segments and a minimum proportion threshold
+        for the last segment.
+        :param text: the string with the contents of the file.
+        :param seg_size: the segment size, in lines.
+        :param overlap: the number of lines to overlap between segments.
+        :param last_prop: the last segment size / other segment size.
+        :return: a list of list(segment) that the text has been cut into.
+        """
+
+        # pre-condition assertion
+        assert seg_size > 0, NON_POSITIVE_SEGMENT_MESSAGE
+        assert overlap >= 0 and last_prop >= 0, NEG_OVERLAP_LAST_PROP_MESSAGE
+        assert seg_size > overlap, LARGER_SEG_SIZE_MESSAGE
+
+        # split text by new line while keeping all the whitespace
+        seg_list = text.splitlines(keepends=True)
+
+        # add sub-lists(segment) to final list
+        final_seg_list = _cut_list_with_overlap(input_list=seg_list,
+                                                norm_seg_size=seg_size,
+                                                overlap=overlap,
+                                                last_prop=last_prop)
+
+        # join lines in each sublist
+        final_seg_list = _join_sublist_element(input_list=final_seg_list)
+
+        return final_seg_list
+
+    def _cut_by_number(text: str, num_segment: int) -> List[str]:
+        """Cut the text by the input number of segment (equally sized).
+
+        The chunks created will be equal in terms of word count, or line count if
+        the text does not have words separated by whitespace (see Chinese).
+        :param text: the string with the contents of the file.
+        :param num_segment: number of segments to cut the text into.
+        :return a list of list(segment) that the text has been cut into.
+        """
+
+        # pre-condition assertion
+        assert num_segment > 0, NON_POSITIVE_SEGMENT_MESSAGE
+
+        # split text by words while stripping all the whitespace
+        words_list = re.findall("\S+\s*", text)
+        total_num_words = len(words_list)
+
+        # the length of normal chunk
+        norm_seg_size = int(total_num_words / num_segment)
+
+        # long segment will have one more words in them than norm_seg_size
+        num_long_seg = total_num_words % num_segment
+        long_seg_size = norm_seg_size + 1
+
+        def get_single_seg(index: int) -> List[str]:
+            """Helper to get one single segment with index.
+
+            This function first evaluate whether the segment is the last one and
+            grab different segment according to the result, and returns sub-lists
+            while index is in the range of number of segment.
+            :param index: the index of the segment in the final segment list.
+            :return single segment in the input_list based on index.
+            """
+
+            if index < num_long_seg:
+
+                return words_list[long_seg_size * index:
+                                  long_seg_size * index + long_seg_size]
+            else:
+
+                num_norm_seg_in_front = index - num_long_seg
+
+                start = long_seg_size * num_long_seg + \
+                        norm_seg_size * num_norm_seg_in_front
+
+                return words_list[start: start + norm_seg_size]
+
+        seg_list = [get_single_seg(index) for index in range(num_segment)]
+
+        # join words in each sublist
+        final_seg_list = _join_sublist_element(input_list=seg_list)
+
+        return final_seg_list
+
+    def _cut_by_milestone(text: str, milestone: str) -> List[str]:
+        """Cuts the file by milestones.
+
+        :param text: the string with the contents of the file.
+        :param milestone: the milestone word that to cut the text by.
+        :return: a list of segment that the text has been cut into.
+        """
+
+        # pre-condition assertion
+        assert len(milestone) > 0, EMPTY_MILESTONE_MESSAGE
+
+        # split text by milestone string
+        final_seg_list = text.split(sep=milestone)
+
+        return final_seg_list
+
+    def cut(text: str, cutting_value: str, cutting_type: str, overlap: str,
+            last_prop_percent: str) -> List[str]:
+        """Cuts each text string into various segments.
+
+        Cutting according to the options chosen by the user.
+        :param text: A string with the text to be split.
+        :param cutting_value: The value by which to cut the texts by.
+        :param cutting_type: A string representing which cutting method to use.
+        :param overlap: A unicode string representing the number of words to be
+               overlapped between each text segment.
+        :param last_prop_percent: A unicode string representing the minimum
+               proportion percentage the last segment has to be to not get
+               assimilated by the previous.
+        :return A list of strings, each representing a segment of the original.
+        """
+
+        # pre-condition assertion
+        assert cutting_type == "milestone" or cutting_type == "letters" or \
+               cutting_type == "words" or cutting_type == "lines" or \
+               cutting_type == "number", INVALID_CUTTING_TYPE_MESSAGE
+
+        # standardize parameters
+        cutting_type = str(cutting_type)
+        overlap = int(overlap)
+        last_prop_percent = float(last_prop_percent.rstrip('%')) / 100
+
+        # distribute cutting method by input cutting value
+        if cutting_type != 'milestone':
+            cutting_value = int(cutting_value)
+
+        if cutting_type == 'letters':
+            string_list = _cut_by_characters(text=text, seg_size=cutting_value,
+                                             overlap=overlap,
+                                             last_prop=last_prop_percent)
+        elif cutting_type == 'words':
+            string_list = _cut_by_words(text=text, seg_size=cutting_value,
+                                        overlap=overlap,
+                                        last_prop=last_prop_percent)
+        elif cutting_type == 'lines':
+            string_list = _cut_by_lines(text=text, seg_size=cutting_value,
+                                        overlap=overlap,
+                                        last_prop=last_prop_percent)
+        elif cutting_type == 'milestone':
+            string_list = _cut_by_milestone(text=text, milestone=cutting_value)
+        elif cutting_type == 'number':
+            string_list = _cut_by_number(text=text, num_segment=cutting_value)
+
+        # noinspection PyUnboundLocalVariable
+        return string_list
+
