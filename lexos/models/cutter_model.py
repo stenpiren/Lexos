@@ -9,8 +9,8 @@ from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
 
 
 class CutterTestOptions(NamedTuple):
+    text: str
     front_end_option: CutterOption
-    #text option
 
 
 class CutterModel(BaseModel):
@@ -22,13 +22,11 @@ class CutterModel(BaseModel):
         """
         super().__init__()
         if test_options is not None:
-            self._test_text = test_options.doc_term_matrix
+            self._test_text = test_options.text
             self._test_front_end_option = test_options.front_end_option
-            # self._test_id_temp_label_map = test_options.id_temp_label_map
         else:
             self._test_text = None
             self._test_front_end_option = None
-            # self._test_id_temp_label_map = None
 
     @staticmethod
     def cut(text: str, cutting_value: str, cutting_type: str, overlap: str,
