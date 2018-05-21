@@ -1,4 +1,5 @@
 from lexos.models.base_model import BaseModel
+from typing import NamedTuple, Optional
 import re
 from typing import List
 
@@ -6,7 +7,9 @@ from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
     NEG_OVERLAP_LAST_PROP_MESSAGE, LARGER_SEG_SIZE_MESSAGE, \
     EMPTY_MILESTONE_MESSAGE, INVALID_CUTTING_TYPE_MESSAGE
 
+
 class CutterTestOptions(NamedTuple):
+
 
 class CutterModel(BaseModel):
     def __init__(self, test_options: Optional[DendroTestOptions] = None):
@@ -19,13 +22,13 @@ class CutterModel(BaseModel):
         if test_options is not None:
             self._test_text = test_options.doc_term_matrix
             self._test_front_end_option = test_options.front_end_option
-            #self._test_id_temp_label_map = test_options.id_temp_label_map
+            # self._test_id_temp_label_map = test_options.id_temp_label_map
         else:
             self._test_text = None
             self._test_front_end_option = None
-            #self._test_id_temp_label_map = None
+            # self._test_id_temp_label_map = None
 
-
+    @staticmethod
     def _cut_list_with_overlap(input_list: list, norm_seg_size: int,
                                overlap: int,
                                last_prop: float) -> List[list]:
@@ -83,6 +86,7 @@ class CutterModel(BaseModel):
             is_last_prop=True if index == num_segment - 1 else False
         ) for index in range(num_segment)]
 
+    @staticmethod
     def _join_sublist_element(input_list: List[List[str]]) -> List[str]:
         """Join each sublist of chars into string.
 
@@ -95,6 +99,7 @@ class CutterModel(BaseModel):
 
         return ["".join(chars) for chars in input_list]
 
+    @staticmethod
     def _cut_by_characters(text: str, seg_size: int, overlap: int,
                            last_prop: float) -> List[str]:
         """Cut the input text into segments by number of chars in each segment.
@@ -128,6 +133,7 @@ class CutterModel(BaseModel):
 
         return final_seg_list
 
+    @staticmethod
     def _cut_by_words(text: str, seg_size: int, overlap: int,
                       last_prop: float) -> List[str]:
         """Cut the input text into segments by number of words in each segment.
@@ -161,6 +167,7 @@ class CutterModel(BaseModel):
 
         return final_seg_list
 
+    @staticmethod
     def _cut_by_lines(text: str, seg_size: int, overlap: int,
                       last_prop: float) -> List[str]:
         """Cut the input text into segments by number of lines in each segment.
@@ -194,6 +201,7 @@ class CutterModel(BaseModel):
 
         return final_seg_list
 
+    @staticmethod
     def _cut_by_number(text: str, num_segment: int) -> List[str]:
         """Cut the text by the input number of segment (equally sized).
 
@@ -248,6 +256,7 @@ class CutterModel(BaseModel):
 
         return final_seg_list
 
+    @staticmethod
     def _cut_by_milestone(text: str, milestone: str) -> List[str]:
         """Cuts the file by milestones.
 
@@ -313,4 +322,3 @@ class CutterModel(BaseModel):
 
         # noinspection PyUnboundLocalVariable
         return string_list
-
