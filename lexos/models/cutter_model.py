@@ -1,16 +1,19 @@
 from lexos.models.base_model import BaseModel
+from lexos.models.filemanager_model import FileManagerModel
 from lexos.receivers.cutter_receiver import CutterFrontEndOption, \
     CutterReceiver
-from typing import NamedTuple, Optional, List
+from typing import NamedTuple, Optional, List, Dict
 import re
 
 from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
     NEG_OVERLAP_LAST_PROP_MESSAGE, LARGER_SEG_SIZE_MESSAGE, \
     EMPTY_MILESTONE_MESSAGE, INVALID_CUTTING_TYPE_MESSAGE
 
+FileIDContentMap = Dict[int, str]
+
 
 class CutterTestOptions(NamedTuple):
-    text: str
+    file_id_content_map: FileIDContentMap
     front_end_option: CutterFrontEndOption
 
 
@@ -23,17 +26,28 @@ class CutterModel(BaseModel):
         """
         super().__init__()
         if test_options is not None:
-            self._test_text = test_options.text
             self._test_option = test_options.front_end_option
+            self._test_file_id_content_map = test_options.file_id_content_map
         else:
-            self._test_text = None
             self._test_option = None
+            self._test_file_id_content_map = None
 
     @property
     def _cutter_option(self) -> CutterFrontEndOption:
         """:return: the similarity option."""
         return self._test_option if self._test_option is not None \
             else CutterReceiver().options_from_front_end()
+
+    @property
+    def _file_id_content_map(self) -> FileIDContentMap:
+        """Result form higher level class: the file manager of current session.
+
+        :return: a file manager object
+        """
+        return self._test_file_id_content_map \
+            if self._test_file_id_content_map is not None \
+            else FileManagerModel().load_file_manager() \
+            .get_content_of_active_with_id()
 
     @staticmethod
     def cut(text: str, cutting_value: str, cutting_type: str, overlap: str,
