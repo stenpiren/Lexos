@@ -1,6 +1,8 @@
 from typing import NamedTuple
 
 from lexos.receivers.base_receiver import BaseReceiver
+from lexos.receivers.similarity_receiver import SimilarityReceiver
+from lexos.managers.lexos_file import override_id
 
 
 class CutterFrontEndOption(NamedTuple):
@@ -23,7 +25,7 @@ class CutterReceiver(BaseReceiver):
 
         :return: a similarity option object that holds all the options
         """
-        override_id = self
+        override_id = SimilarityReceiver(BaseReceiver)
 
         cutting_value = self._front_end_data['cutValue' + option_identifier] \
             if 'cutByMS' + option_identifier not in self._front_end_data \
@@ -37,10 +39,19 @@ class CutterReceiver(BaseReceiver):
             if 'cutOverlap' + option_identifier in self._front_end_data \
             else '0'
 
-        last_prop = self._front_end_data['cutLastProp' + option_identifier].strip('%') \
-            if 'cutLastProp' + option_identifier in self._front_end_data else '50'
+        last_prop = self._front_end_data['cutLastProp' + option_identifier].\
+            strip('%') \
+            if 'cutLastProp' + option_identifier in self._front_end_data else\
+            '50'
 
+        return CutterFrontEndOption(cutting_value=cutting_value,
+                                    cutting_type=cutting_type,
+                                    last_prop=last_prop,
+                                    overlap=overlap)
+
+        '''
         return CutterFrontEndOption(cutting_value="",
                                     cutting_type="",
                                     last_prop="",
                                     overlap="")
+        '''
