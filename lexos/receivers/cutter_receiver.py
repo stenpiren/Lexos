@@ -23,6 +23,22 @@ class CutterReceiver(BaseReceiver):
 
         :return: a similarity option object that holds all the options
         """
+        override_id = self
+
+        cutting_value = self._front_end_data['cutValue' + option_identifier] \
+            if 'cutByMS' + option_identifier not in self._front_end_data \
+            else self._front_end_data['MScutWord' + option_identifier]
+
+        cutting_type = self._front_end_data['cutType' + option_identifier] \
+            if 'cutByMS' + option_identifier not in self._front_end_data \
+            else 'milestone'
+
+        overlap = self._front_end_data['cutOverlap' + option_identifier] \
+            if 'cutOverlap' + option_identifier in self._front_end_data \
+            else '0'
+
+        last_prop = self._front_end_data['cutLastProp' + option_identifier].strip('%') \
+            if 'cutLastProp' + option_identifier in self._front_end_data else '50'
 
         return CutterFrontEndOption(cutting_value="",
                                     cutting_type="",
