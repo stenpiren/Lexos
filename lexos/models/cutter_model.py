@@ -1,5 +1,6 @@
 from lexos.models.base_model import BaseModel
-from lexos.receivers.cutter_receiver import CutterOption
+from lexos.receivers.cutter_receiver import CutterFrontEndOption, \
+    CutterReceiver
 from typing import NamedTuple, Optional, List
 import re
 
@@ -10,7 +11,7 @@ from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
 
 class CutterTestOptions(NamedTuple):
     text: str
-    front_end_option: CutterOption
+    front_end_option: CutterFrontEndOption
 
 
 class CutterModel(BaseModel):
@@ -23,10 +24,16 @@ class CutterModel(BaseModel):
         super().__init__()
         if test_options is not None:
             self._test_text = test_options.text
-            self._test_front_end_option = test_options.front_end_option
+            self._test_option = test_options.front_end_option
         else:
             self._test_text = None
-            self._test_front_end_option = None
+            self._test_option = None
+
+    @property
+    def _cutter_option(self) -> CutterFrontEndOption:
+        """:return: the similarity option."""
+        return self._test_option if self._test_option is not None \
+            else CutterReceiver().options_from_front_end()
 
     @staticmethod
     def cut(text: str, cutting_value: str, cutting_type: str, overlap: str,
@@ -78,6 +85,9 @@ class CutterModel(BaseModel):
 
         # noinspection PyUnboundLocalVariable
         return string_list
+
+
+"""-----------Below are helper functions for cutter model.-----------"""
 
 
 def _cut_list_with_overlap(input_list: list, norm_seg_size: int,
