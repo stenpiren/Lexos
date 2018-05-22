@@ -12,17 +12,19 @@ class CutterFrontEndOption(NamedTuple):
     overlap: str
 
 
-class SimilarityReceiver(BaseReceiver):
+class CutterReceiver(BaseReceiver):
 
     def __init__(self):
         """The Receiver to get all the similarity options"""
         super().__init__()
 
-    def options_from_front_end(self) -> SimilarityFrontEndOption:
+    def options_from_front_end(self) -> CutterFrontEndOption:
         """Get the similarity option from front end
 
         :return: a similarity option object that holds all the options
         """
-        comp_file_id = int(self._front_end_data['uploadname'])
 
-        return SimilarityFrontEndOption(comp_file_id=comp_file_id)
+        return CutterFrontEndOption(cutting_value="",
+                                    cutting_type="",
+                                    last_prop="",
+                                    overlap="")
