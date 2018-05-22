@@ -1,5 +1,5 @@
 from lexos.models.base_model import BaseModel
-from lexos.receivers.cutter_receiver import CutterOption, CutterReceiver
+from lexos.receivers.cutter_receiver import CutterOption
 from typing import NamedTuple, Optional, List
 import re
 
