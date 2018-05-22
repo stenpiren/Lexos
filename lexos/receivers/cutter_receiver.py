@@ -6,7 +6,10 @@ from lexos.receivers.base_receiver import BaseReceiver
 class CutterFrontEndOption(NamedTuple):
     """The typed tuple to implement cutter options."""
     # This is the id of the file to be compared
-    comp_file_id: int
+    cutting_value: str
+    cutting_type: str
+    last_prop: str
+    overlap: str
 
 
 class SimilarityReceiver(BaseReceiver):
