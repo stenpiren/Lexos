@@ -6,6 +6,18 @@ from lexos.helpers.error_messages import NON_POSITIVE_SEGMENT_MESSAGE, \
     EMPTY_MILESTONE_MESSAGE, INVALID_CUTTING_TYPE_MESSAGE
 
 
+def right_to_left(text: str):
+    """Reverse right to left written languages
+
+    :param text: the string with the contents of the file.
+    :return: string of reversed input text
+    """
+    letters = list(text)
+    letters.reverse()
+    reversed_text = "".join(letters)
+    return reversed_text
+
+
 def cut_list_with_overlap(input_list: list, norm_seg_size: int, overlap: int,
                           last_prop: float) -> List[list]:
     """Cut the split list of text into list that contains sub-lists.

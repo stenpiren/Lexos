@@ -733,6 +733,7 @@ def prepare_additional_options(opt_uploads: Dict[str, FileStorage],
     # Create an array of option strings:
     # cons_file_string, lem_file_string, sc_file_string, sw_kw_file_string,
     #     cons_manual, lem_manual, sc_manual, and sw_kw_manual
+
     all_options = (file_strings[0], file_strings[1], file_strings[2],
                    file_strings[3], request.form['manualconsolidations'],
                    request.form['manuallemmas'],

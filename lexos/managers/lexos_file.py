@@ -207,7 +207,7 @@ class LexosFile:
             scrub_options[text_area] = request.form[text_area]
         for upload_file in request.files:
             file_name = request.files[upload_file].filename
-            if (file_name != ''):
+            if file_name != '':
                 scrub_options[upload_file] = file_name
         if 'tags' in request.form:
             scrub_options['keepDOEtags'] = request.form['tags'] == 'keep'
@@ -227,13 +227,11 @@ class LexosFile:
         for key in list(request.form.keys()):
             if 'usecache' in key:
                 storage_options.append(key[len('usecache'):])
-
         if 'scrub' not in self.options:
             self.options['scrub'] = {}
         scrub_options = self.get_scrub_options()
 
         text_string = self.load_contents()
-
         text_string = scrubber.scrub(
             text_string,
             gutenberg=self.is_gutenberg,
