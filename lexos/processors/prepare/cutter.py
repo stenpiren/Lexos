@@ -10,12 +10,19 @@ def right_to_left(text: str):
     """Reverse right to left written languages
 
     :param text: the string with the contents of the file.
-    :return: string of reversed input text
+    :return: string of reversed input text, preserving original line order
     """
-    letters = list(text)
-    letters.reverse()
-    reversed_text = "".join(letters)
-    return reversed_text
+
+    lines = text.split("\n")
+
+    read_from_left = ""
+    for line in lines:
+        line = list(line)
+        line.reverse()
+        reversed_line = "".join(line)
+        read_from_left += (reversed_line + "\n")
+
+    return read_from_left
 
 
 def cut_list_with_overlap(input_list: list, norm_seg_size: int, overlap: int,
