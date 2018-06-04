@@ -41,8 +41,8 @@ $(document).ready( function () {
 	// Handle the continue button on the warning dialog
     $(document).on("click", "#continue", function(event) {
     	$('#warning-modal').modal("hide");
-	    var loadingTimeout = window.setTimeout(300);
-    	doAjax();
+        window.setTimeout(300)
+        doAjax();
     });
 
     // Trigger validation when the Get Graphs button is clicked
@@ -87,14 +87,14 @@ $(document).ready( function () {
 
 	// Function to convert the form data into a JSON object
 	function jsonifyForm() {
-	    var form = {};
-	    $.each($("form").serializeArray(), function (i, field) {
+      let form = {}
+      $.each($("form").serializeArray(), function (i, field) {
 	        form[field.name] = field.value || "";
 	    });
 	    return form;
 	}
 
-	var xhr;
+	let xhr;
 	function doAjax() {
 	    /* It's not really efficient to create a FormData and a json object,
 	       but the former is easier to pass to run.py functions, and the
@@ -212,15 +212,16 @@ $(document).ready( function () {
 			<span title="" data-original-title="" id="bttnlabel" class="bttnfilelabels down" style=""></span>
 		</fieldset>
 	</div>
+
+<div class="col-md-8 col-lg-8">
+    <div id="multicloud-container"></div>
+</div>
 </div>
 {% endblock %}
 
 
-{% block results %}
 
-<div id="multicloud-container"></div>
 
-{% endblock %}
 
 
 {% block submit %}
@@ -233,7 +234,7 @@ $(document).ready( function () {
 	$("[name='options-toggle']").bootstrapSwitch();
 	$('input[name="options-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
   		//console.log(this); // DOM element
-  		if (state == false) { // Topic clouds
+  		if (state === false) { // Topic clouds
   			$("#analysisType").val("topicfiles");
 			$("#multicloud-selection").hide();
 			$("#getmultiviz").hide();
@@ -248,7 +249,7 @@ $(document).ready( function () {
 	});
 </script>
  <script>
-	var dataset = {{ json_obj|safe or {} }};
-    var numActiveDocs = {{ numActiveDocs }};
+	const dataset = {{ json_obj|safe or {} }};
+    const numActiveDocs = {{ numActiveDocs }};
 </script>
 {% endblock %}
