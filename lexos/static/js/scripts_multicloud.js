@@ -14,26 +14,37 @@ $(function(){
 
   // trigger function when 'toggle all' radio button is checked
   $('#allCheckBoxSelector').click(function () {
-    if (this.checked) {
-      $('.minifilepreview:not(:checked)').trigger('click')
-    }
-    else {
-      $('.minifilepreview:checked').trigger('click')
-    }
+    if (this.checked) $('.minifilepreview:not(:checked)').trigger('click')
+    else $('.minifilepreview:checked').trigger('click')
   })
 
+  vizCreation()// function:Update the Radio button according to the clicks from the user
 
+  // Display the document selection options on page load
+  $('#multicloud-selection').show()
+  $('#multicloud-upload').hide()
+})
+
+
+// Make pre-Ajax implementation work
+$(window).on('load', function (dataset, wordCounts) {
+  renderClouds(dataset, wordCounts)
+})
+
+//-----------------------------------------------------------------------------
+/* #### RADIO CHECK BUTTON #### */
+function vizCreation(){
   let prev = -1 // initialize variable
   $('#vizcreateoptions').selectable({
-    filter: 'label',  // Makes the label tags the elts that are selectable
+    filter: 'label',  // Makes the label tags the elements that are selectable
     selecting: function (e, ui) {
-      let currnet = $(ui.selecting.tagName, e.target).index(ui.selecting)   // gets index of current target label
+      let current = $(ui.selecting.tagName, e.target).index(ui.selecting)   // gets index of current target label
       if (e.shiftKey && prev > -1) {      // if you were holding the shift key and there was a box previously clicked
         // take the slice of labels from index prev to index curr and give them the 'ui-selected' class
-        $(ui.selecting.tagName, e.target).slice(Math.min(prev, currnet) + 1, Math.max(prev, currnet) + 1).addClass('ui-selected')
+        $(ui.selecting.tagName, e.target).slice(Math.min(prev, current) + 1, Math.max(prev, current) + 1).addClass('ui-selected')
         prev = -1  // reset prev index
       } else {
-        prev = currnet  // set prev to current if not shift click
+        prev = current  // set prev to current if not shift click
       }
     },
     stop: function () {
@@ -41,13 +52,11 @@ $(function(){
       $('.ui-selected input').trigger('click')
     }
   })
-  // Display the document selection options on page load
-  $('#multicloud-selection').show()
-  $('#multicloud-upload').hide()
+}
+//-----------------------------------------------------------------------------
 
-})
-
-
+/* #### RENDER CLOUDS #### */
+//draws the word cloud.
 function renderClouds (dataset, wordCounts) {
   // Decrease the first wordScale domain numbers to increase size contrast
   let wordScale = d3.scale.linear().domain([1, 5, 50, 500]).range([10, 20, 40, 80]).clamp(true)
@@ -66,25 +75,19 @@ function renderClouds (dataset, wordCounts) {
 
   drawWords(wordScale, wordColor, wordCounts,dataset,wordCounts, numSegments)
 
-
   const sort = $('#sortable')
   sort.sortable({revert: 100})
   sort.disableSelection()
 
-  // message appears when there is at leat one document generated.
+  // message appears when there is at least one document generated.
   if ($('#svg0')[0]) {
     $('#tips').html('<p>Drag the clouds to rearrange them.</p>')
   }
-
 }
 
+//-----------------------------------------------------------------------------
 
-// Make pre-Ajax implementation work
-$(window).on('load', function (dataset, wordCounts) {
-  renderClouds(dataset, wordCounts)
-})
-
-
+/* #### DRAW THE WORDS INTO DIFFERENT COLORS AND SIZE ####*/
 function drawWords (wordScale, wordColor, wordCount ,dataset, wordCounts, numSegments) {
   let statusText
   let segment
@@ -138,7 +141,6 @@ function drawWords (wordScale, wordColor, wordCount ,dataset, wordCounts, numSeg
               .duration(200)
               .style('opacity', 0)
           })
-
         viz.append('text')
           .data(label)
           .style('font-size', 14)
@@ -150,7 +152,6 @@ function drawWords (wordScale, wordColor, wordCount ,dataset, wordCounts, numSeg
             return encodeURI(label) // encodes the string.
           })
       }
-
       d3.layout.cloud().size([280, 290])
         .words(children)
         .rotate(function () { return ~~(Math.random() * 2) * 5 })
@@ -159,3 +160,5 @@ function drawWords (wordScale, wordColor, wordCount ,dataset, wordCounts, numSeg
         .start()
     }
   }
+
+//-----------------------------------------------------------------------------
