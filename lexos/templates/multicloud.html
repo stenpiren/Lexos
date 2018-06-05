@@ -107,7 +107,6 @@
 <script>
 	$("[name='options-toggle']").bootstrapSwitch();
 	$('input[name="options-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
-  		//console.log(this); // DOM element
   		if (state === false) { // Topic clouds
   			$("#analysisType").val("topicfiles");
 			$("#multicloud-selection").hide();
