@@ -1,30 +1,10 @@
 $(function () {
+
+
   // Add tooltip to the DOM
   const getMultiviz = $('#getmultiviz')
   const multiCloudSelection = $('#multicloud-selection')
   const multiCloudUpload = $('#multicloud-upload')
-
-  // Set form display based on toggle state on page load
-  const toggleState = $('input[name="options-toggle"]').bootstrapSwitch('state')
-  // Topic clouds
-  if (toggleState === false) {
-    $('#analysisType').val('topicfiles')
-    multiCloudSelection.hide()
-    getMultiviz.hide()
-    multiCloudUpload.show()
-  }
-  // Document clouds
-  else {
-    $('#analysisType').val('userfiles')
-    multiCloudSelection.show()
-    multiCloudUpload.hide()
-    getMultiviz.show()
-  }
-
-  // Show the Get Graphs button when a file is uploaded
-  $('#optuploadname').change(function () {
-    getMultiviz.show()
-  })
 
   // Handle the continue button on the warning dialog
   $(document).on('click', '#continue', function () {
@@ -38,7 +18,7 @@ $(function () {
     const valid = validate()
     if (valid === true) {
       $('#multicloud-container').empty()
-      confirmation()
+      process()
     }
   })
 
@@ -66,7 +46,6 @@ $(function () {
   multiCloudSelection.show()
   multiCloudUpload.hide()
 })
-
 
 //=============================================================================
 // Validate
@@ -148,8 +127,8 @@ function sendAjaxRequest (url, formData) {
   })
 }
 /* #### this function runs right after you click the 'get graph' button. ####*/
-// warning modal to confirm that the user wants to continue to draw the word cloud
-function confirmation () {
+// warning modal to confirm that the user wants to continue
+function process () {
   const warningModal = $('#warning-modal')
   $('#formAction').val('post')
   $('#status-visualize').css({'visibility': 'visible', 'z-index': '400000'})

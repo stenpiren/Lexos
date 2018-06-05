@@ -25,7 +25,7 @@
 </div>
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-12">
 		<div>
 		<input id="analysisType" type="hidden" name="analysistype" value="{{"userfiles" if session['multicloudoptions']['analysistype'] == 'userfiles' }}"/>
             <label>
@@ -38,6 +38,7 @@
                 session['multicloudoptions']['analysistype'] == 'userfiles'
                 }}/>
             </label>
+            <!-- TODO: make this individual -->
             <i class="fa fa-question-circle lexos-popover-trigger" data-html="true" data-toggle="popover"
 			   data-placement="right" data-container="body" title="Document Clouds and Topics Clouds"
 			   data-content="Click the toggle to switch between document clouds and topic clouds. Document clouds are word clouds based on the documents you select from your uploaded documents.
@@ -66,6 +67,7 @@
 			</div>
 		</fieldset>
 
+        <legend style="min-width:200px;">Topic Clouds </legend>
 		<fieldset class="multicloud-options cf" id="multicloud-upload">
 			<legend>Upload a MALLET Topic File<i class="fa fa-question-circle lexos-tooltip-trigger" data-html="true" data-toggle="tooltip"
 			   data-placement="right" data-container="body" title="You may use either the output of the
@@ -105,21 +107,7 @@
 
 
 <script>
-	$("[name='options-toggle']").bootstrapSwitch();
-	$('input[name="options-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
-  		if (state === false) { // Topic clouds
-  			$("#analysisType").val("topicfiles");
-			$("#multicloud-selection").hide();
-			$("#getmultiviz").hide();
-			$("#multicloud-upload").show();
-  		}
-  		else { // Document clouds
-  			$("#analysisType").val("userfiles");
-			$("#multicloud-selection").show();
-			$("#multicloud-upload").hide();
-			$("#getmultiviz").show();
-  		}
-	});
+
     let numActiveDocs = {{ numActiveDocs }};
 </script>
 {% endblock %}
