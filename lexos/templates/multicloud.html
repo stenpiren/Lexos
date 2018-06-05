@@ -13,160 +13,6 @@
 
 <script type="text/javascript" src="{{ url_for('static', filename='js/scripts_multicloud.js') }}?ver={{version}}"></script>
 <script src="{{ url_for('static', filename='node_modules/bootstrap-switch/dist/js/bootstrap-switch.min.js') }}?ver={{version}}"></script>
-
-<script>
-
-$(document).ready( function () {
-  const optionsToggle = $('input[name="options-toggle"]')
-  $("[name='options-toggle']").bootstrapSwitch();
-	optionsToggle.on('switchChange.bootstrapSwitch', function(event, state) {
-  		//console.log(this); // DOM element
-  		if (state === false) { // Topic clouds
-  			$("#analysisType").val("topicfiles");
-			$("#multicloud-selection").hide();
-			$("#getmultiviz").hide();
-			$("#multicloud-upload").show();
-  		}
-  		else { // Document clouds
-  			$("#analysisType").val("userfiles");
-			$("#multicloud-selection").show();
-			$("#multicloud-upload").hide();
-			$("#getmultiviz").show();
-  		}
-	})
-  // Set form display based on toggle state on page load
-  const toggleState = optionsToggle.bootstrapSwitch('state')
-  // Topic clouds
-  const getMultiViz= $("#getmultiviz")
-	if (toggleState === false) {
-		$("#analysisType").val("topicfiles");
-		$("#multicloud-selection").hide();
-		getMultiViz.hide();
-		$("#multicloud-upload").show();
-	}
-	// Document clouds
-	else {
-		$("#analysisType").val("userfiles");
-		$("#multicloud-selection").show();
-		$("#multicloud-upload").hide();
-		getMultiViz.show();
-	}
-
-	// Show the Get Graphs button when a file is uploaded
-	$('#optuploadname').change(function() {
-		getMultiViz.show();
-	});
-
-	// Handle the continue button on the warning dialog
-    $(document).on("click", "#continue", function() {
-      $('#warning-modal').modal("hide");
-        window.setTimeout(300)
-      doAjax();
-    });
-
-    // Trigger validation when the Get Graphs button is clicked
-	getMultiViz.click(function() {
-		let valid = validate();
-		if (valid === true) {
-			$("#multicloud-container").empty();
-			process();
-		}
-	});
-})
-	// Validate
-	function validate() {
-      let toggleState
-      toggleState = $('input[name="options-toggle"]').bootstrapSwitch('state')
-		// For document clouds, make sure there are active documents
-	    if (toggleState === true && numActiveDocs < 1) {
-	      msg = "You have no active documents. Please activate at least one document using the <a href='./manage'>Manage</a> tool or <a href='./upload'>upload</a> a new document.";
-	      $('#error-modal-message').html(msg);
-	      $('#error-modal').modal();
-	      e.preventDefault();
-	      return false;
-	    }
-	    // For document clouds, make sure documents have been selected
-	    else if (toggleState === true && $("input[name='segmentlist']:checked").length < 1) {
-	      msg = 'Please select at least one document. If no documents are listed, go to the <a href="./manage">Manage</a> tool to activate documents or <a href="./upload">upload</a> new documents.';
-	      $('#error-modal-message').html(msg);
-	      $('#error-modal').modal();
-	      e.preventDefault();
-	      return false;
-	    }
-		// For topic clouds, make sure a Mallet file has been uploaded.
-		if (toggleState === false && $('input[type=file]').val() === "") {
-	        $("#error-modal-message").html("No MALLET topic file uploaded.");
-	        $("#error-modal").modal();
-			return false;
-		}
-		else {
-			$("#status-visualize").css({"visibility":"visible", "z-index": "400000"});
-			return true;
-		}
-	}
-
-	// Function to convert the form data into a JSON object
-	function jsonifyForm() {
-      const form = {}
-      $.each($("form").serializeArray(), function (i, field) {
-	        form[field.name] = field.value || "";
-	    });
-	    return form;
-	}
-
-
-	function doAjax() {
-	    /* It's not really efficient to create a FormData and a json object,
-	       but the former is easier to pass to run.py functions, and the
-	       latter is easier for the ajax response to use. */
-	    let formData = new FormData($('form')[0]);
-	    formData.append("action", "post");
-	    let jsonform =  jsonifyForm();
-	    $.extend(jsonform, {"action": "post"});
-	    const url = '/doMulticloud'
-        sendAjaxRequest(url, formData)
-          .fail( function (jqXHR, textStatus, errorThrown) {
-	        $("#status-visualize").css({"visibility":"hidden"});
-	        // Show an error if the user has not cancelled the action
-	        if (errorThrown !== "abort") {
-	            $("#error-modal-message").html("Lexos could not process the data. If you are trying to generate topic clouds, make sure that you have uploaded a valid file produced by the MALLET <code>--words-topic-counts-file</code> or the <code>--output_state</code> command. The latter is a zip archive that must be unzipped before you upload it to Lexos.");
-	            $("#error-modal").modal();
-	            } console.log("bad: " + textStatus + ": " + errorThrown);
-	        })
-          .done(function(response) {
-	        response = JSON.parse(response);
-	        renderClouds(response[0], response[1]);
-	        $("#status-visualize").css({"visibility":"hidden"});
-          })
-	}
-
-	function process() {
-	    const warningModal = $("#warning-modal")
-	    $('#formAction').val("post");
-	    $("#status-visualize").css({"visibility":"visible", "z-index": "400000"});
-        const warning = '<p>Rendering multiclouds takes a long time and will likely cause your browser to freeze temporarily. Please be patient.</p><p>Do you want to continue?</p>'
-        let footerButtons = '<button type="button" class="btn btn-default" id="continue">Yes</button>';
-        footerButtons += '<button type="button" class="btn btn-default" data-dismiss="modal">No</button>';
-	    warningModal.children().first().removeClass("modal-lg").addClass("modal-sm");
-	    $("#warning-modal-footer").html(footerButtons);
-	    $('#warning-modal-message').html(warning);
-	    warningModal.modal();
-	    warningModal.on('hide.bs.modal', function () {
-	    	 $("#status-visualize").css("visibility", "hidden");
-		});
-
-	}
-	function sendAjaxRequest(url,formData) {
-      return $.ajax({
-        url: url,
-        type: 'POST',
-        processData: false, // important
-        contentType: false, // important
-        data: formData
-      })
-    }
-
-</script>
 {% endblock %}
 
 {% block title %}Multicloud{% endblock %}
@@ -249,19 +95,32 @@ $(document).ready( function () {
 
 
 {% block results %}
-
 <div id="multicloud-container"></div>
-
 {% endblock %}
 
 
 {% block submit %}
-
 <input class="bttn bttn-action" id="getmultiviz" type="button" value="Get Graphs"/>
-
 <p class="viz-tips" id="tips"></p>
 
-<script>
 
+<script>
+	$("[name='options-toggle']").bootstrapSwitch();
+	$('input[name="options-toggle"]').on('switchChange.bootstrapSwitch', function(event, state) {
+  		//console.log(this); // DOM element
+  		if (state === false) { // Topic clouds
+  			$("#analysisType").val("topicfiles");
+			$("#multicloud-selection").hide();
+			$("#getmultiviz").hide();
+			$("#multicloud-upload").show();
+  		}
+  		else { // Document clouds
+  			$("#analysisType").val("userfiles");
+			$("#multicloud-selection").show();
+			$("#multicloud-upload").hide();
+			$("#getmultiviz").show();
+  		}
+	});
+    let numActiveDocs = {{ numActiveDocs }};
 </script>
 {% endblock %}
