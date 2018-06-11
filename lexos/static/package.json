@@ -20,6 +20,7 @@
     "datatables.net-fixedheader-bs": "^3.1.2",
     "datatables.net-select": "^1.2.2",
     "datatables.net-select-bs": "^1.2.2",
+    "detect-browser": "^2.5.1",
     "font-awesome": "^4.7.0",
     "jquery": "^3.3.1",
     "lato-font": "^3.0.0",
